@@ -1,5 +1,7 @@
 local playerPed = PlayerPedId()
 
+local sleep = false
+
 local isProcessing = false
 
 local function ProcessItem(removeItem, removeAmmount, giveItem, giveAmount)
@@ -8,6 +10,7 @@ local function ProcessItem(removeItem, removeAmmount, giveItem, giveAmount)
 
 end
 
+--[[
 local function GetProcessZone(coords)
 	for zoneName, zoneData in pairs(Config.ProcessZones) do
 	  if #(coords - zoneData.coords) <= zoneData.radius then
@@ -17,7 +20,7 @@ local function GetProcessZone(coords)
   
 	return nil
 end
-
+]]
 
 local function Process(item)
 	isProcessing = true
@@ -58,16 +61,18 @@ end
 
 CreateThread(function()
     while Config.Enable do
+        local wait = 1000
 
         Wait(0)
 
         local coords = GetEntityCoords(playerPed)
-        local processZone = GetProcessZone(coords)
+        --local processZone = GetProcessZone(coords)
 
         for _, zoneData in pairs(Config.ProcessZones) do
-            if processZone == zoneData then
+            if #(coords - zoneData.coords) <= zoneData.radius then
+                wait = 2
                 if not isProcessing then
-                    DrawMarker(zoneData.markerType, zoneData.coords.x, zoneData.coords.y, zoneData.coords.z - 0.99, 0.0, 0.0, 0.0, 0, 0.0, 0.0, 1.0, 1.0, 0.5, 0, 255, 0, 100, false, true, 2, false, false, false, false)
+                    --DrawMarker(zoneData.markerType, zoneData.coords.x, zoneData.coords.y, zoneData.coords.z - 0.99, 0.0, 0.0, 0.0, 0, 0.0, 0.0, 1.0, 1.0, 0.5, 0, 255, 0, 100, false, true, 2, false, false, false, false)
                 end
 
                 if #(coords - zoneData.coords) < 1 then
@@ -78,9 +83,8 @@ CreateThread(function()
                     isProcessing = true
                     Process(zoneData)
                 end
-            else
-                isProcessing = false
             end
+            Wait(wait)
         end
     end
 end)

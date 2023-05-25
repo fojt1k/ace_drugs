@@ -30,24 +30,37 @@ end)
 RegisterServerEvent('prodej', function(sellItem, minAmmount, maxAmmount, minPrice, maxPrice)
     local source = source
     local xPlayer = ESX.GetPlayerFromId(source)
-   --[[ local ammount = 1
-    local price = 0
-    local item = 'water'
-]]
+
     if xPlayer.getInventoryItem(sellItem).count >= maxAmmount then
-        ammount = math.random(minAmmount, maxAmmount)
-        if minAmmount == 1 then
+        local ammount = math.random(minAmmount, maxAmmount)
+        local price = 0
+
+        if ammount == 1 then
             price = math.random(minPrice, maxPrice)
         else
-            price = ammount * math.random(minPrice, maxPrice)
+            for i = 1, ammount do
+                price = price + math.random(minPrice, maxPrice)
+            end
         end
+
+        xPlayer.removeInventoryItem(sellItem, ammount)
+        Wait(1)
+        xPlayer.addMoney(price)
+
+        local connect = {
+            {
+                ["color"] = "16718105",
+                ["title"] = GetPlayerName(source).." (".. xPlayer.identifier ..")",
+                ["description"] = "📤 Prodal: **"..sellItem.. "**, V množství: **".. ammount .. "**, Za částku: **" .. price .. " 💲**",
+                ["footer"] = {
+                    ["text"] = os.date('%H:%M - %d. %m. %Y', os.time()),
+                },
+            }
+        }
+
+        PerformHttpRequest("https://discord.com/api/webhooks/1104472321575616544/Z_p4-tX79zL9PDBKb603h-OMiL31LCTSirePoDXIVrqzGU5Zl-FUxc3YcxTxjxPtBqBB", function(err, text, headers) end, 'POST', json.encode({username = "Dealer", embeds = connect}), { ['Content-Type'] = 'application/json' })
     else
         TriggerClientEvent('chat:addMessage', source, { args = { '^1ERROR', 'Nemáš dostatek materiálů.' } })
         return
     end
-
-    xPlayer.removeInventoryItem(sellItem, ammount)
-    Wait(1)
-    xPlayer.addMoney(price)
-    --TriggerEvent('sell', item, ammount, price)
 end)

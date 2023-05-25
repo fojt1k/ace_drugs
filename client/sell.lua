@@ -15,18 +15,27 @@ local function Draw3DText(x,y,z,text,scale) -- založení funkce Draw3DText s pa
     SetTextOutline()
 end
 
-
 local selling = false
 
-RegisterCommand('StartSell', function()
+RegisterCommand('StartSell', function(source, args)
     selling = true
 
-    TriggerEvent('chat:addMessage', {
-        args = { '^2INFO', 'Prodej byl spuštěn.' },
-        color = { 0, 255, 0 }
-    })
+    local sellData = args[1]
+
+    for sellKey, sellData in pairs(Config.Sell) do
+        if sellKey == sellData.sellItem then
+            print(sellData.sellItem)
+        end
+    end
 end)
 
+
+
+
+
+
+TriggerEvent('chat:addSuggestion', '/StartSell', 'Slouží pro prodej drog NPC', {
+})
 
 
 TriggerEvent('chat:addSuggestion', '/StartSell', 'Slouží pro prodej drog NPC', {
@@ -62,7 +71,6 @@ local function SellItem(sellItem, minAmmount, maxAmmount, minPrice, maxPrice)
 
 end
 
-
 CreateThread(function()
     while Config.Enable do
         Wait(10)
@@ -94,7 +102,7 @@ CreateThread(function()
                                 }
                             })
                             Wait(3500)
-                            SellItem(item.sellItem, item.minAmmount, item.maxAmmount, item.minPrice, item.maxPrice)
+                            SellItem(Config.Sell.Item.sellItem, Config.Sell.Item.minAmmount, Config.Sell.Item.maxAmmount, Config.Sell.Item.minPrice, Config.Sell.Item.maxPrice)
                             SetPedAsNoLongerNeeded(oldped)
                         end
                     end

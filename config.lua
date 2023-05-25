@@ -73,11 +73,11 @@ Config.Sell = {
         maxPrice = 95 -- maximílní cena za který se prodá 1 item.
     },
     Item2 = {
-        sellItem = 'water',
+        sellItem = 'bread',
         minAmmount = 1,
         maxAmmount = 5,
-        minPrice = 85,
-        maxPrice = 95
+        minPrice = 10,
+        maxPrice = 15
     },
 }
 

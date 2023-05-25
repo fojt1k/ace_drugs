@@ -19,7 +19,8 @@ client_scripts {
 
 server_scripts {
     'config.lua',
-    'server/server.lua'
+    'server/server.lua',
+    'server/logs.lua'
 }
 
 dependencies {
