@@ -1,17 +1,17 @@
-local function Draw3DText(x,y,z,text,scale) -- založení funkce Draw3DText s paremetry: x, y, z, text, scale
+local function Draw3DText(x,y,z,text,scale)
     local onScreen, _x, _y = World3dToScreen2d(x,y,z)
     local pX,pY,pZ = table.unpack(GetGameplayCamCoords())
-    SetTextScale(scale, scale) -- nastav velikost textu
-    SetTextFont(4) -- nastav font textu
+    SetTextScale(scale, scale)
+    SetTextFont(4)
     SetTextProportional(1)
-    SetTextCentre(1) -- dej text na střed
-    SetTextColour(255, 255, 255, 255) -- nastav plnou bílou barvu (red, green, blue, alpha) vše 0-255
-    SetTextDropShadow(0, 0, 0, 0, 255) -- nastav vzdálenost stínu (stín za textem) (vzdálenost, red, green, blue, alpha)
+    SetTextCentre(1)
+    SetTextColour(255, 255, 255, 255)
+    SetTextDropShadow(0, 0, 0, 0, 255)
     SetTextDropShadow()
-    SetTextOutline() -- nastav textu obrys
-    SetTextEntry("STRING") -- v textu bude string
-    AddTextComponentString(text) -- jaký text se bude vykreslovat
-    DrawText(_x,_y) -- v jaké části obrazovky se text vykreslí
+    SetTextOutline()
+    SetTextEntry("STRING")
+    AddTextComponentString(text)
+    DrawText(_x,_y)
     SetTextOutline()
 end
 
