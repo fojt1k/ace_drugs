@@ -2,10 +2,11 @@ ESX = exports["es_extended"]:getSharedObject()
 
 
 RegisterServerEvent('item', function(item, amount)
-	local src = source
+    local src = source
+    local player = ESX.GetPlayerFromId(src)
 
-	if xPlayer.canCarryItem(source, item, amount) then
-		xPlayer.addInventoryItem(source, item, amount)
+	if player.canCarryItem(item, amount) then
+		player.addInventoryItem(item, amount)
 	else
         TriggerClientEvent('chat:addMessage', source, { args = { '^1ERROR', 'Nemáš dostatek místa.' }})
 	end
