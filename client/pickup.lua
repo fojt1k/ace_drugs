@@ -117,21 +117,21 @@ CreateThread(function()
         local nearbyObject, nearbyID = nil, nil
         local zone = GetZone(coords)
         
-        for zoneName, zoneData in pairs(Config.CircleZones) do
+        for zone, zoneData in pairs(Config.CircleZones) do
             for i = 1, #PropPlants, 1 do
                 local propCoords = GetEntityCoords(PropPlants[i])
                 if #(coords - propCoords) < 2 then
-                    ESX.ShowHelpNotification('Stiskni [E] pro sber') 
+                    ESX.ShowHelpNotification('Stiskni [E] pro sběr') 
                     nearbyObject, nearbyID = PropPlants[i], i
                 end
             end
             
             if nearbyObject and IsPedOnFoot(playerPed) then
                 if not isPickingUp then
-                    Wait(0)
+                    isPickingUp = false
+                    Wait(10)
                 end
-
-                if IsControlJustReleased(0, 38) and not isPickingUp then
+                if IsControlJustReleased(0, 38) then
                     isPickingUp = true
                     
                     TaskStartScenarioInPlace(playerPed, 'world_human_gardener_plant', 0, true)
@@ -153,8 +153,6 @@ CreateThread(function()
                         PickUpItem(zoneData.item, zoneData.amount)
                         table.remove(PropPlants, nearbyID)
                         PropSpawned = PropSpawned - 1
-                    else
-                        isPickingUp = false
                     end
                 end
             else
