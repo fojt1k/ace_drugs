@@ -117,7 +117,7 @@ CreateThread(function()
         local nearbyObject, nearbyID = nil, nil
         local zone = GetZone(coords)
         
-        for _, zoneData in pairs(Config.CircleZones) do
+        for zoneName, zoneData in pairs(Config.CircleZones) do
             for i = 1, #PropPlants, 1 do
                 local propCoords = GetEntityCoords(PropPlants[i])
                 if #(coords - propCoords) < 2 then
