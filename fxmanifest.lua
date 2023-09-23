@@ -12,9 +12,7 @@ shared_scripts {
 
 client_scripts {
     'config.lua',
-    'client/pickup.lua',
-    'client/process.lua',
-    'client/sell.lua'
+    'client/*.lua',
 }
 
 server_scripts {
