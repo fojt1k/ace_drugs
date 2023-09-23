@@ -65,32 +65,3 @@ RegisterServerEvent('prodej', function(sellItem, minAmmount, maxAmmount, minPric
         return
     end
 end)
-
--- Plants
-
-local plants = {}
-
-RegisterServerEvent('plant:save')
-AddEventHandler('plant:save', function(data)
-    table.insert(plants, data)
-    TriggerClientEvent('plant:created', -1, data)
-
-    -- Uložte data rostlin do souboru JSON
-    local json = json.encode(plants)
-    local file = io.open('plants.json', 'w')
-    if file then
-        file:write(json)
-        file:close()
-    else
-        print('Chyba při zápisu do souboru plants.json.')
-    end
-end)
-
-Citizen.CreateThread(function()
-    local file = io.open('plants.json', 'r')
-    if file then
-        local jsondata = file:read('*a')
-        file:close()
-        plants = json.decode(jsondata)
-    end
-end)
