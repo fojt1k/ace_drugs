@@ -5,12 +5,13 @@ game 'gta5'
 lua54 'yes'
 
 shared_scripts {
-    '@es_extended/imports.lua',
-    '@ox_lib/init.lua'
+    '@es_extended/imports.lua'
+    --'@ox_lib/init.lua'
 }
 
 
 client_scripts {
+    '@ox_lib/init.lua',
     'config.lua',
     'client/pickup.lua',
     'client/process.lua',

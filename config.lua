@@ -64,18 +64,18 @@ Config.ProcessZones = {
     }
 }
 
-Config.Sell = {
-    Item = {
-        sellItem = 'water', -- item který chcete prodávat.
-        minAmmount = 1, -- minimální počet který se prodá.
-        maxAmmount = 5, -- maximální počet který se prodá.
-        minPrice = 85, -- minimální cena za který se prodá 1 item.
-        maxPrice = 95 -- maximílní cena za který se prodá 1 item.
+Config.SellItems = {
+    {
+        item = 'water', -- Položka, kterou chcete prodávat.
+        minAmount = 1, -- Minimální počet, který se prodá.
+        maxAmount = 5, -- Maximální počet, který se prodá.
+        minPrice = 85, -- Minimální cena za 1 položku.
+        maxPrice = 95 -- Maximální cena za 1 položku.
     },
-    Item2 = {
-        sellItem = 'bread',
-        minAmmount = 1,
-        maxAmmount = 5,
+    {
+        item = 'bread',
+        minAmount = 1,
+        maxAmount = 5,
         minPrice = 10,
         maxPrice = 15
     },

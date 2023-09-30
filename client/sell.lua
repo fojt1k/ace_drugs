@@ -1,116 +1,43 @@
-local function Draw3DText(x,y,z,text,scale)
-    local onScreen, _x, _y = World3dToScreen2d(x,y,z)
-    local pX,pY,pZ = table.unpack(GetGameplayCamCoords())
-    SetTextScale(scale, scale)
-    SetTextFont(4)
-    SetTextProportional(1)
-    SetTextCentre(1)
-    SetTextColour(255, 255, 255, 255)
-    SetTextDropShadow(0, 0, 0, 0, 255)
-    SetTextDropShadow()
-    SetTextOutline()
-    SetTextEntry("STRING")
-    AddTextComponentString(text)
-    DrawText(_x,_y)
-    SetTextOutline()
-end
+local sold = false
+local SellEnable = false
+local npcs = {}
 
-local selling = false
-
-RegisterCommand('StartSell', function(source, args)
-    selling = true
-
-    local sellData = args[1]
-
-    for sellKey, sellData in pairs(Config.Sell) do
-        if sellKey == sellData.sellItem then
-            print(sellData.sellItem)
-        end
-    end
-end)
-
-
-
-
-
-
-TriggerEvent('chat:addSuggestion', '/StartSell', 'Slouží pro prodej drog NPC', {
-})
-
-
-TriggerEvent('chat:addSuggestion', '/StartSell', 'Slouží pro prodej drog NPC', {
-})
-
-
-RegisterCommand('StopSell', function()
-    selling = false
-    TriggerEvent('chat:addMessage', {
-        args = { '^2INFO', 'Prodej byl zrušen.' },
-        color = { 0, 255, 0 }
-    })
-end)
-
-
-TriggerEvent('chat:addSuggestion', '/StopSell', 'Slouží pro ukončení prodeje drog NPC', {
-})
-
-
-local function GetPedInFront()
+function GetNpc()
 	local player = PlayerId()
 	local plyPed = GetPlayerPed(player)
 	local plyPos = GetEntityCoords(plyPed, false)
 	local plyOffset = GetOffsetFromEntityInWorldCoords(plyPed, 0.0, 1.3, 0.0)
 	local rayHandle = StartShapeTestCapsule(plyPos.x, plyPos.y, plyPos.z, plyOffset.x, plyOffset.y, plyOffset.z, 1.0, 12, plyPed, 7)
 	local _, _, _, _, ped = GetShapeTestResult(rayHandle)
-	return ped
+	return npc
 end
 
-local function SellItem(sellItem, minAmmount, maxAmmount, minPrice, maxPrice)
-
-    TriggerServerEvent('prodej', sellItem, minAmmount, maxAmmount, minPrice, maxPrice)
+function SellDrugs()
 
 end
 
 CreateThread(function()
-    while Config.Enable do
-        Wait(10)
+    while true do
+        Wait(0)
+        local npc = GetNpc()
 
-        if selling then
-            ped = GetPedInFront()
 
-            if ped ~= 0 then 
-                if not IsPedDeadOrDying(ped) and not IsPedInAnyVehicle(ped) then
-                    local pedType = GetPedType(ped)
-                    if ped ~= oldped and (IsPedAPlayer(ped) == false and pedType ~= 28) then
-                        local pos = GetEntityCoords(ped)
-                        Draw3DText(pos.x, pos.y, pos.z + 0.0, "Stiskni [E] pro prodej", 0.40)
-                        if IsControlJustReleased(0, 38) then
-                            oldped = ped
-                            TaskLookAtCoord(ped, pos.x, pos.y, pos.z, -1, 2048, 3)
-                            TaskStandStill(ped, 100.0)
-							SetEntityAsMissionEntity(ped)
-                            Wait(1)
-                            TaskStartScenarioInPlace(playerPed, 'package_dropoff', 0, true)
-							local pos1 = GetEntityCoords(ped)
-                            lib.progressBar({
-                                duration = 2000,
-                                label = 'prodáváš',
-                                useWhileDead = false,
-                                canCancel = true,
-                                disable = {
-                                    car = true,
-                                }
-                            })
-                            Wait(3500)
-                            SellItem(Config.Sell.Item.sellItem, Config.Sell.Item.minAmmount, Config.Sell.Item.maxAmmount, Config.Sell.Item.minPrice, Config.Sell.Item.maxPrice)
-                            SetPedAsNoLongerNeeded(oldped)
-                        end
+        local InVehicle = IsPedInAnyVehicle(npc)
+
+        if idk then
+            npc = GetNpc()
+
+            if npc ~= 0 then
+                if not InVehicle then
+                    if npc ~= oldNpc then
+                        local positon = GetEntityCoords(npc)
+                        SellEnable = true
+                        Wait(10)
+                        SellDrugs()
+                    else
+                        Wait(1000)
                     end
-                else
-                    Wait(500)
                 end
-            else
-                Wait(500)    
             end
         end
     end
