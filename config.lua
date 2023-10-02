@@ -2,8 +2,6 @@ Config = {}
 
 Config.Enable = true
 
--- Zde můžete vytvořit zón kolik chcete
-
 Config.CircleZones = {
     Field = {
         coords = vector3(2808.7437, 4765.9019, 46.9180), -- pozice kde se budou spawnovat propy.
@@ -64,22 +62,40 @@ Config.ProcessZones = {
     }
 }
 
-Config.SellItems = {
-    {
-        item = 'water', -- Položka, kterou chcete prodávat.
-        minAmount = 1, -- Minimální počet, který se prodá.
-        maxAmount = 5, -- Maximální počet, který se prodá.
-        minPrice = 85, -- Minimální cena za 1 položku.
-        maxPrice = 95 -- Maximální cena za 1 položku.
+Config.Sell = {
+    Command = {
+        cmd = 'StartSell', -- Command to start or stop selling
     },
-    {
-        item = 'bread',
-        minAmount = 1,
-        maxAmount = 5,
-        minPrice = 10,
-        maxPrice = 15
+
+    Chances = {
+        PedAttackChance = 0.3, -- Chance for the ped to attack the player (0.0 - 1.0)
+        PoliceCallChance = 0.2, -- Chance for the ped to call the police (0.0 - 1.0)
     },
+
+    Exports = {
+        PoliceCallEvent = 'callPolice', -- Name of the export or event to call the police
+    },
+
+    Items = {
+        {
+            sellItem = 'bread',    -- Item to sell
+            minAmount = 1,         -- Minimum amount to sell
+            maxAmount = 5,         -- Maximum amount to sell
+            minPrice = 10,         -- Minimum price per item
+            maxPrice = 20          -- Maximum price per item
+        },
+        {
+            sellItem = 'water',
+            minAmount = 1,
+            maxAmount = 5,
+            minPrice = 5,
+            maxPrice = 15
+        },
+        -- Add more items for sale as needed
+    }
 }
+
+
 
 Config.Delays = {
     PickUp = 5000, -- doba po které hráč obdrží item.

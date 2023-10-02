@@ -1,12 +1,40 @@
 ESX = exports["es_extended"]:getSharedObject()
 
+function IsPlayerInZone(playerCoords, zoneCoords, radius)
+    local distance = #(playerCoords - zoneCoords)
+    return distance <= radius
+end
+
+RegisterServerEvent('checkZone')
+AddEventHandler('checkZone', function(zoneName)
+    local source = source
+    local xPlayer = ESX.GetPlayerFromId(source)
+
+    if xPlayer then
+        local playerCoords = xPlayer.getCoords(true)
+        local zone = Config.CircleZones[zoneName]
+
+        if zone then
+            if IsPlayerInZone(playerCoords, zone.coords, zone.radius) then
+                -- Hráč je v zóně
+                print("Hráč je v zóně " .. zoneName)
+            else
+                -- Hráč není v zóně
+                print("Hráč není v zóně " .. zoneName)
+            end
+        else
+            print("Zóna " .. zoneName .. " neexistuje v konfiguraci.")
+        end
+    end
+end)
+
 
 RegisterServerEvent('item', function(item, amount)
-    local src = source
-    local player = ESX.GetPlayerFromId(src)
+    local source = source
+    local xPlayer = ESX.GetPlayerFromId(source)
 
-	if player.canCarryItem(item, amount) then
-		player.addInventoryItem(item, amount)
+	if xPlayer.canCarryItem(item, amount) then
+		xPlayer.addInventoryItem(item, amount)
 	else
         TriggerClientEvent('chat:addMessage', source, { args = { '^1ERROR', 'Nemáš dostatek místa.' }})
 	end
@@ -16,10 +44,13 @@ RegisterServerEvent('process', function(removeItem, removeAmmount, giveItem, giv
 	local source = source
 	local xPlayer = ESX.GetPlayerFromId(source)
 
+    if giveAmount > Config.giveAmount then
+        TriggerClientEvent('chat:addMessage', source, { args = { '^1ERROR', 'Pokus o neplatné množství itemů.' }})
+    end
+
 	if xPlayer.getInventoryItem(removeItem).count >= removeAmmount then
-		xPlayer.removeInventoryItem(removeItem, removeAmmount)
-		Wait(1)
-		xPlayer.addInventoryItem(giveItem, giveAmount)
+        xPlayer.removeInventoryItem(removeItem, removeAmmount)
+        xPlayer.addInventoryItem(giveItem, giveAmount)
     else
         TriggerClientEvent('chat:addMessage', source, { args = { '^1ERROR', 'Nemáš dostatek materiálů.' }})
 	end
@@ -27,41 +58,23 @@ end)
 
 -- prodej
 
-
-RegisterServerEvent('prodej', function(sellItem, minAmmount, maxAmmount, minPrice, maxPrice)
+RegisterServerEvent('prodej')
+AddEventHandler('prodej', function(sellItem, amount, price)
     local source = source
     local xPlayer = ESX.GetPlayerFromId(source)
 
-    if xPlayer.getInventoryItem(sellItem).count >= maxAmmount then
-        local ammount = math.random(minAmmount, maxAmmount)
-        local price = 0
+    if xPlayer then
+        local itemCount = xPlayer.getInventoryItem(sellItem).count
 
-        if ammount == 1 then
-            price = math.random(minPrice, maxPrice)
+        if itemCount >= amount then
+            xPlayer.removeInventoryItem(sellItem, amount)
+            Wait(1)
+            xPlayer.addMoney(price)
+
+            local message = string.format("You sold %sx %s for $%s", amount, sellItem, price)
+            TriggerClientEvent('chatMessage', source, '^2SELL', { 255, 0, 0 }, message)
         else
-            for i = 1, ammount do
-                price = price + math.random(minPrice, maxPrice)
-            end
+            TriggerClientEvent('chatMessage', source, '^1ERROR', { 255, 0, 0 }, 'You do not have enough items to sell.')
         end
-
-        xPlayer.removeInventoryItem(sellItem, ammount)
-        Wait(1)
-        xPlayer.addMoney(price)
-
-        local connect = {
-            {
-                ["color"] = "16718105",
-                ["title"] = GetPlayerName(source).." (".. xPlayer.identifier ..")",
-                ["description"] = "📤 Prodal: **"..sellItem.. "**, V množství: **".. ammount .. "**, Za částku: **" .. price .. " 💲**",
-                ["footer"] = {
-                    ["text"] = os.date('%H:%M - %d. %m. %Y', os.time()),
-                },
-            }
-        }
-
-        PerformHttpRequest("https://discord.com/api/webhooks/1104472321575616544/Z_p4-tX79zL9PDBKb603h-OMiL31LCTSirePoDXIVrqzGU5Zl-FUxc3YcxTxjxPtBqBB", function(err, text, headers) end, 'POST', json.encode({username = "Dealer", embeds = connect}), { ['Content-Type'] = 'application/json' })
-    else
-        TriggerClientEvent('chat:addMessage', source, { args = { '^1ERROR', 'Nemáš dostatek materiálů.' } })
-        return
     end
 end)

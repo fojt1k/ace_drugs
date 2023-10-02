@@ -1,89 +1,67 @@
 local playerPed = PlayerPedId()
-
-local sleep = false
-
 local isProcessing = false
 
-local function ProcessItem(removeItem, removeAmmount, giveItem, giveAmount)
-
-	TriggerServerEvent('process', removeItem, removeAmmount, giveItem, giveAmount)
-
-end
-
---[[
-local function GetProcessZone(coords)
-	for zoneName, zoneData in pairs(Config.ProcessZones) do
-	  if #(coords - zoneData.coords) <= zoneData.radius then
-		return zoneData
-	  end
-	end
-  
-	return nil
-end
-]]
-
-local function Process(item)
-	isProcessing = true
-
-	TaskStartScenarioInPlace(playerPed, "PROP_HUMAN_PARKING_METER", 0, true)
-
-    if lib.progressBar({
-        duration = 3500,
-        label = 'Předěláváš ' .. item.name,
-        useWhileDead = false,
-        canCancel = true,
-        disable = {
-            movement = true,
-            carMovement = true,
-            mouse = false,
-            combat = true
-        },
-    }) then
-
-        isProcessing = false
-			print(item.removeItem, item.removeAmmount, item.giveItem, item.giveAmount)
-
-			ProcessItem(item.removeItem, item.removeAmmount, item.giveItem, item.giveAmount)
-
-			local timeLeft = Config.Delays.Processing / 1000
-			while timeLeft > 0 do
-				Wait(1000)
-				timeLeft -= 1
-
-				if #(GetEntityCoords(playerPed)-item.coords) > item.radius then
-					break
-				end
-			end
-			ClearPedTasks(playerPed)
-			isProcessing = false
-        end
+local function ProcessItem(removeItem, removeAmount, giveItem, giveAmount)
+    TriggerServerEvent('process', removeItem, removeAmount, giveItem, giveAmount)
 end
 
 CreateThread(function()
     while Config.Enable do
         local wait = 1000
-
         Wait(0)
-
         local coords = GetEntityCoords(playerPed)
-        --local processZone = GetProcessZone(coords)
 
-        for _, zoneData in pairs(Config.ProcessZones) do
-            if #(coords - zoneData.coords) <= zoneData.radius then
+        for zoneName, zoneData in pairs(Config.ProcessZones) do
+            local distance = #(coords - zoneData.coords)
+
+            if distance <= zoneData.radius then
                 wait = 2
                 if not isProcessing then
-                    --DrawMarker(zoneData.markerType, zoneData.coords.x, zoneData.coords.y, zoneData.coords.z - 0.99, 0.0, 0.0, 0.0, 0, 0.0, 0.0, 1.0, 1.0, 0.5, 0, 255, 0, 100, false, true, 2, false, false, false, false)
-                end
+                    DrawMarker(zoneData.markerType, zoneData.coords.x, zoneData.coords.y, zoneData.coords.z - 0.99, 0.0, 0.0, 0.0, 0, 0.0, 0.0, 1.0, 1.0, 0.5, 0, 255, 0, 100, false, true, 2, false, false, false, false)
 
-                if #(coords - zoneData.coords) < 1 then
-                    ESX.ShowHelpNotification('Stiskni [E] pro predel')
-                end
+                    if distance < 1 then
+                        ESX.ShowHelpNotification('Press [E] to process ' .. zoneData.name)
+                    end
 
-                if IsControlJustReleased(0, 38) and not isProcessing then
-                    isProcessing = true
-                    Process(zoneData)
+                    if IsControlJustReleased(0, 38) then
+                        isProcessing = true
+                        TaskStartScenarioInPlace(playerPed, "PROP_HUMAN_PARKING_METER", 0, true)
+
+                        if lib.progressBar({
+                            duration = 3500,
+                            label = 'Processing ' .. zoneData.name,
+                            useWhileDead = false,
+                            canCancel = true,
+                            disable = {
+                                movement = true,
+                                carMovement = true,
+                                mouse = false,
+                                combat = true
+                            },
+                        }) then
+                            isProcessing = false
+                            ProcessItem(zoneData.removeItem, zoneData.removeAmount, zoneData.giveItem, zoneData.giveAmount)
+
+                            local timeLeft = Config.Delays.Processing / 1000
+
+                            while timeLeft > 0 do
+                                Wait(1000)
+                                timeLeft = timeLeft - 1
+
+                                local newDistance = #(GetEntityCoords(playerPed) - zoneData.coords)
+
+                                if newDistance > zoneData.radius then
+                                    break
+                                end
+                            end
+
+                            ClearPedTasks(playerPed)
+                            isProcessing = false
+                        end
+                    end
                 end
             end
+
             Wait(wait)
         end
     end
