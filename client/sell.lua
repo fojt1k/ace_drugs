@@ -65,7 +65,7 @@ end)
 
 TriggerEvent('chat:addSuggestion', '/' .. sellCommand, 'Start or stop selling items to NPC', {})
 
-local function GetPedInFront()
+function GetPedInFront()
     local player = PlayerId()
     local plyPed = GetPlayerPed(player)
     local plyPos = GetEntityCoords(plyPed, false)
@@ -99,7 +99,7 @@ local function SellItem(sellItem, minAmount, maxAmount, minPrice, maxPrice)
 end
 
 CreateThread(function()
-    while Config.Sell.Enable do
+    while true do
         Wait(0)
 
         if selling then
