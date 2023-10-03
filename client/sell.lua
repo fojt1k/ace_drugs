@@ -65,7 +65,7 @@ end)
 
 TriggerEvent('chat:addSuggestion', '/' .. sellCommand, 'Start or stop selling items to NPC', {})
 
-function GetPedInFront()
+local function GetPedInFront()
     local player = PlayerId()
     local plyPed = GetPlayerPed(player)
     local plyPos = GetEntityCoords(plyPed, false)
@@ -100,7 +100,7 @@ end
 
 CreateThread(function()
     while true do
-        Wait(0)
+        Wait(10)
 
         if selling then
             ped = GetPedInFront()
@@ -109,10 +109,10 @@ CreateThread(function()
                 if not IsPedDeadOrDying(ped) and not IsPedInAnyVehicle(ped) then
                     local pedType = GetPedType(ped)
                     if ped ~= oldped and (IsPedAPlayer(ped) == false and pedType ~= 28) then
-                        print('true')
                         local pos = GetEntityCoords(ped)
                         Draw3DText(pos.x, pos.y, pos.z + 0.0, "Press [E] to sell", 0.40)
                         if IsControlJustReleased(0, 38) then
+                            local plyPed = GetPlayerPed(PlayerPedId())
                             oldped = ped
                             TaskLookAtCoord(ped, pos.x, pos.y, pos.z, -1, 2048, 3)
                             TaskStandStill(ped, 100.0)
@@ -135,13 +135,14 @@ CreateThread(function()
                         end
                     end
                 else
-                    Wait(0)
+                    Wait(500)
                 end
             else
-                Wait(0)
+                Wait(500)
             end
 
             if ShouldPedAttack() then
+                print('attack')
                 TaskCombatPed(ped, plyPed, 0, 16)
             end
 

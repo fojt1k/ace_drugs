@@ -1,33 +1,5 @@
 ESX = exports["es_extended"]:getSharedObject()
 
-function IsPlayerInZone(playerCoords, zoneCoords, radius)
-    local distance = #(playerCoords - zoneCoords)
-    return distance <= radius
-end
-
-RegisterServerEvent('checkZone')
-AddEventHandler('checkZone', function(zoneName)
-    local source = source
-    local xPlayer = ESX.GetPlayerFromId(source)
-
-    if xPlayer then
-        local playerCoords = xPlayer.getCoords(true)
-        local zone = Config.CircleZones[zoneName]
-
-        if zone then
-            if IsPlayerInZone(playerCoords, zone.coords, zone.radius) then
-                -- Hráč je v zóně
-                print("Hráč je v zóně " .. zoneName)
-            else
-                -- Hráč není v zóně
-                print("Hráč není v zóně " .. zoneName)
-            end
-        else
-            print("Zóna " .. zoneName .. " neexistuje v konfiguraci.")
-        end
-    end
-end)
-
 
 RegisterServerEvent('item', function(item, amount)
     local source = source

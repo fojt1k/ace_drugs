@@ -1,5 +1,6 @@
 local playerPed = PlayerPedId()
 local isProcessing = false
+local isInZone = false
 
 local function ProcessItem(removeItem, removeAmount, giveItem, giveAmount)
     TriggerServerEvent('process', removeItem, removeAmount, giveItem, giveAmount)
@@ -15,6 +16,7 @@ CreateThread(function()
             local distance = #(coords - zoneData.coords)
 
             if distance <= zoneData.radius then
+                local isInZone = true
                 wait = 2
                 if not isProcessing then
                     DrawMarker(zoneData.markerType, zoneData.coords.x, zoneData.coords.y, zoneData.coords.z - 0.99, 0.0, 0.0, 0.0, 0, 0.0, 0.0, 1.0, 1.0, 0.5, 0, 255, 0, 100, false, true, 2, false, false, false, false)
@@ -40,7 +42,9 @@ CreateThread(function()
                             },
                         }) then
                             isProcessing = false
-                            ProcessItem(zoneData.removeItem, zoneData.removeAmount, zoneData.giveItem, zoneData.giveAmount)
+                            if isInZone then
+                                ProcessItem(zoneData.removeItem, zoneData.removeAmount, zoneData.giveItem, zoneData.giveAmount)
+                            end
 
                             local timeLeft = Config.Delays.Processing / 1000
 

@@ -4,6 +4,7 @@ ESX = exports["es_extended"]:getSharedObject()
 
 local sleep = false
 local playerPed = PlayerPedId()
+local isInZone = false
 
 --
 
@@ -121,6 +122,7 @@ CreateThread(function()
             for i = 1, #PropPlants, 1 do
                 local propCoords = GetEntityCoords(PropPlants[i])
                 if #(coords - propCoords) < 2 then
+                    isInZone = true
                     ESX.ShowHelpNotification('Stiskni [E] pro sběr') 
                     nearbyObject, nearbyID = PropPlants[i], i
                 end
@@ -150,7 +152,9 @@ CreateThread(function()
                     }) then
                         DeleteObject(nearbyObject)
                         ClearPedTasks(playerPed)
-                        PickUpItem(zoneData.item, zoneData.amount)
+                        if isInZone then
+                            PickUpItem(zoneData.item, zoneData.amount)
+                        end
                         table.remove(PropPlants, nearbyID)
                         PropSpawned = PropSpawned - 1
                     end
@@ -159,6 +163,7 @@ CreateThread(function()
                 Wait(500)
             end
         end
+        isInZone = false
     end
 end)
 
